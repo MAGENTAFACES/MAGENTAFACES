@@ -1,0 +1,44 @@
+#!/bin/sh
+
+. /etc/rc.subr
+
+name="mf_tweepy"
+rcvar=`set_rcvar`
+magenta_faces_user="www"
+pidfile="/var/run/${name}.pid"
+
+command="/usr/local/www/magenta_faces/mf_tweepy.py"
+start_cmd=${name}_start
+stop_cmd=${name}_stop
+restart_cmd=${name}_restart
+
+mf_tweepy_start()
+{
+	/usr/sbin/daemon -u $magenta_faces_user -p $pidfile $command
+}
+
+mf_tweepy_stop()
+{
+	if [ -f ${pidfile} ]; then
+		/bin/kill `cat ${pidfile}`
+	else
+		/bin/echo "${name} not running"
+	fi
+}
+
+mf_tweepy_restart()
+{
+	${name}_stop
+	CNT=0
+	/bin/echo -n "killing ${name} "
+	/bin/echo -n "."
+	/bin/sleep 1
+	/bin/echo "."
+	${name}_start
+	/bin/echo "LAZARUS!!!"
+	/bin/sleep 1
+	
+}
+
+load_rc_config $name
+run_rc_command "$1"

@@ -1,0 +1,44 @@
+#!/bin/sh
+
+. /etc/rc.subr
+
+name="magenta_faces"
+rcvar=`set_rcvar`
+magenta_faces_user="www"
+pidfile="/var/run/${name}.pid"
+
+command="/usr/local/www/magenta_faces/magenta_faces.fcgi"
+start_cmd=${name}_start
+stop_cmd=${name}_stop
+restart_cmd=${name}_restart
+
+magenta_faces_start()
+{
+	/usr/sbin/daemon -u $magenta_faces_user -p $pidfile $command
+}
+
+magenta_faces_stop()
+{
+	if [ -f ${pidfile} ]; then
+		/bin/kill `cat ${pidfile}`
+	else
+		/bin/echo "${name} not running"
+	fi
+}
+
+magenta_faces_restart()
+{
+	magenta_faces_stop
+	CNT=0
+	/bin/echo -n "killing ${name} "
+	/bin/echo -n "."
+	/bin/sleep 1
+	/bin/echo "."
+	magenta_faces_start
+	/bin/echo "LAZARUS!!!"
+	/bin/sleep 1
+	
+}
+
+load_rc_config $name
+run_rc_command "$1"
